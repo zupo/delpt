@@ -2,11 +2,11 @@
 // For now, its presence will mean Lamdera detects the extra JS and packages
 // In future this will be more structured + restricted once the design is done
 
-const log = require("./elm-pkg-js/log");
+const text_to_speech = require("./elm-pkg-js/text_to_speech");
 
 exports.init = async function init(app) {
   // @WARNING: this only runs for Lamdera production deploys!
   // This file will not run in Local development, an equivalent to this is
   // automatically generated in Local Development for every file in elm-pkg-js/
-  log.init(app);
+  text_to_speech.init(app);
 };

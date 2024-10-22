@@ -51,7 +51,10 @@ update msg model =
     case msg of
         SmashedLikeButton ->
             ( model
-            , Effect.sendCmd <| Lamdera.sendToBackend Bridge.SmashedLikeButton
+            , Effect.batch
+                [ Effect.sendCmd <| Lamdera.sendToBackend Bridge.SmashedLikeButton
+                , Effect.say "Smashed it!"
+                ]
             )
 
 

@@ -1,11 +1,10 @@
-module Effect exposing
+port module Effect exposing
     ( Effect
     , none, batch
-    , sendCmd, sendMsg
+    , sendCmd
     , pushRoute, replaceRoute
-    , pushRoutePath, replaceRoutePath
-    , loadExternalUrl, back
     , map, toCmd
+    , say
     )
 
 {-|
@@ -13,19 +12,19 @@ module Effect exposing
 @docs Effect
 
 @docs none, batch
-@docs sendCmd, sendMsg
+@docs sendCmd
 
 @docs pushRoute, replaceRoute
-@docs pushRoutePath, replaceRoutePath
-@docs loadExternalUrl, back
 
 @docs map, toCmd
+
+@docs say
 
 -}
 
 import Browser.Navigation
 import Dict exposing (Dict)
-import Route exposing (Route)
+import Route
 import Route.Path
 import Shared.Model
 import Shared.Msg
@@ -45,6 +44,8 @@ type Effect msg
     | Back
       -- SHARED
     | SendSharedMsg Shared.Msg.Msg
+      -- PORTS
+    | Say String
 
 
 
@@ -72,15 +73,6 @@ sendCmd =
     SendCmd
 
 
-{-| Send a message as an effect. Useful when emitting events from UI components.
--}
-sendMsg : msg -> Effect msg
-sendMsg msg =
-    Task.succeed msg
-        |> Task.perform identity
-        |> SendCmd
-
-
 
 -- ROUTING
 
@@ -97,13 +89,6 @@ pushRoute route =
     PushUrl (Route.toString route)
 
 
-{-| Same as `Effect.pushRoute`, but without `query` or `hash` support
--}
-pushRoutePath : Route.Path.Path -> Effect msg
-pushRoutePath path =
-    PushUrl (Route.Path.toString path)
-
-
 {-| Set the new route, but replace the previous one, so clicking the back
 button **won't** go back to the previous route.
 -}
@@ -117,25 +102,16 @@ replaceRoute route =
     ReplaceUrl (Route.toString route)
 
 
-{-| Same as `Effect.replaceRoute`, but without `query` or `hash` support
--}
-replaceRoutePath : Route.Path.Path -> Effect msg
-replaceRoutePath path =
-    ReplaceUrl (Route.Path.toString path)
+
+-- PORTS
 
 
-{-| Redirect users to a new URL, somewhere external your web application.
--}
-loadExternalUrl : String -> Effect msg
-loadExternalUrl =
-    LoadExternalUrl
+port text_to_speech : String -> Cmd msg
 
 
-{-| Navigate back one page
--}
-back : Effect msg
-back =
-    Back
+say : String -> Effect msg
+say text =
+    Say text
 
 
 
@@ -171,6 +147,9 @@ map fn effect =
 
         SendSharedMsg sharedMsg ->
             SendSharedMsg sharedMsg
+
+        Say text ->
+            Say text
 
 
 {-| Elm Land depends on this function to perform your effects.
@@ -211,3 +190,6 @@ toCmd options effect =
         SendSharedMsg sharedMsg ->
             Task.succeed sharedMsg
                 |> Task.perform options.fromSharedMsg
+
+        Say text ->
+            text_to_speech text
