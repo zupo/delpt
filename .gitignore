@@ -1,0 +1,17 @@
+.direnv/
+elm-stuff/
+node_modules/
+dist/
+
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
+# elm-land
+.elm-land/server/

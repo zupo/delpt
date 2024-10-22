@@ -1,0 +1,86 @@
+# Run all tests, linters, code analysis and other QA tasks on
+# every push to main and PRs.
+# Deploy PRs as preview apps, deploy main to prod.
+
+# 1. Create a new SSH key
+# 2. Add the public key to https://dashboard.lamdera.app/account/sshkeys
+# 3. Add the private key as SSH_KEY in the repository secrets
+# 4. Add the contents of ~/.elm/.lamdera-cli as LAMDERA_TOKEN in the repository secrets
+
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  CI:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - uses: actions/checkout@v4
+        if: github.event_name != 'pull_request'
+        with:
+          fetch-depth: 0
+
+      - uses: cachix/install-nix-action@v26
+      - uses: cachix/cachix-action@v14
+        with:
+          name: devenv
+
+      - name: Install devenv
+        run: nix profile install nixpkgs#devenv
+
+      - name: Run tests and linters
+        run: devenv test
+
+      # If we forgot to run build before committing, this & next step will catch it.
+      - name: Run codegen
+        shell: devenv shell bash -- -e {0}
+        run: |
+          elm-land build
+          tailwindcss -i ./src/style.css -o ./public/style.css
+
+      - name: Check for uncommitted-changes
+        uses: teamniteo/gha-actions/uncommitted-changes@main
+
+      - name: Install SSH key for deployment
+        uses: shimataro/ssh-key-action@v2
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: "already added in Install Lamdera step"
+
+      - name: Deploy
+        if: matrix.os == 'ubuntu-latest'
+        shell: devenv shell bash -- -e {0}
+        env:
+          LAMDERA_TOKEN: ${{ secrets.LAMDERA_TOKEN }}
+        run: |
+          mkdir -p ~/.ssh && ssh-keyscan apps.lamdera.com >> ~/.ssh/known_hosts
+          git remote add lamdera git@apps.lamdera.com:drills.git
+          mkdir -p ~/.elm && echo -n $LAMDERA_TOKEN >> ~/.elm/.lamdera-cli
+          yes | lamdera deploy
+
+      # On `main`, `lamdera deploy` will run `lamdera check` automatically.
+      # However, not on branches, so we need to run it manually. But `lamdera check`
+      # expects to be run from `main` or `master` branch, so we need to trick it.
+      # Since this repo uses `main`, we can checkout from current branch into
+      # `master` and master will get all changes from the current branch.
+      - name: Lamdera check
+        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest'
+        shell: devenv shell bash -- -e {0}
+        run: |
+          git checkout -b master
+          lamdera check
