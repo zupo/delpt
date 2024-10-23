@@ -48,7 +48,8 @@ auto-loading of dev environment into your shell.
 Each commit to `main` is auto-deployed to https://delpt.lamdera.app/.
 
 Each Pull Request gets a preview app at
-https://delpt-<BRANCH_NAME>.lamdera.app/.
+`https://delpt-<BRANCH_NAME>.lamdera.app/`. Like so:
+https://delpt-preview-app.lamdera.app/.
 
 To have the same in your repo, you need to set the following secrets.
 
@@ -61,8 +62,8 @@ and save it to `https://github.com/<OWNER>/<REPO>/settings/secrets/actions` as
 #### `SSH_KEY`
 
 Run `ssh-keygen -t rsa -b 4096 -f delpt -N ""`. Copy the contents of `delpt` and
-save it to `https://github.com/<OWNER>/<REPO>/settings/secrets/actions` as
+paste to `https://github.com/<OWNER>/<REPO>/settings/secrets/actions` as
 `SSH_KEY`.
 
-Copy the contents of `delpt.pub` and enter them into `Add new key` on
+Copy the contents of `delpt.pub` and paste into `Add new key` on
 https://dashboard.lamdera.app/account/sshkeys.
