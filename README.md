@@ -33,9 +33,9 @@ $ devenv up
 Either run `$ devenv shell` or install [direnv](https://direnv.net/) for
 auto-loading of dev environment into your shell.
 
-- Run unit tests: `test`
-- Run linters: `lint`
-- Run all checks: `devenv test`
+- Run unit tests: `elm-test-rs --compiler $(which lamdera)`
+- Run linters: `pre-commit run --all-files`
+- Run all of the above: `devenv test`
 - Verify deployment: `lamdera check`
 - CI: https://github.com/zupo/DELPT/actions/workflows/ci.yml
 - Recommended VSCode extensions:

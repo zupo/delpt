@@ -67,6 +67,4 @@ in
       }
     else {};
 
-  scripts.lint.exec = "pre-commit run --all-files";
-  scripts.test.exec = "elm-test-rs --compiler $(which lamdera)";
 }
