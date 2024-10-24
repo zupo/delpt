@@ -49,7 +49,7 @@ Each commit to `main` is auto-deployed to https://delpt.lamdera.app/.
 
 Each Pull Request gets a preview app at
 `https://delpt-<BRANCH_NAME>.lamdera.app/`. Like so:
-https://delpt-preview-app.lamdera.app/.
+https://delpt-preview-app.lamdera.app/. Let's show it.
 
 To have the same in your repo, you need to set the following secrets.
 
