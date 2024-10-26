@@ -50,7 +50,6 @@ jobs:
         shell: devenv shell bash -- -e {0}
         run: |
           elm-land build
-          tailwindcss -i ./src/style.css -o ./public/style.css
 
       - name: Check for uncommitted-changes
         uses: teamniteo/gha-actions/uncommitted-changes@main
@@ -60,7 +59,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         with:
           key: ${{ secrets.SSH_KEY }}
-          known_hosts: "already added in Install Lamdera step"
+          known_hosts: "added later in Deploy step"
 
       - name: Deploy
         if: matrix.os == 'ubuntu-latest'
