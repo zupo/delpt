@@ -50,7 +50,19 @@ in {
 
     elm-review.enable = true;
     elm-review.excludes = [ ".elm-land/" ];
+
+    # When https://github.com/pre-commit/identify/pull/484 is merged,
+    # replace `files` line with this:
+    # types = ["elm" "css" "javascript"];
+    generate-css = {
+      enable = true;
+      name = "Generate CSS";
+      entry = "tailwindcss -i ./src/style.css -o ./public/style.css";
+      files = ".(elm|css|js)$";
+      pass_filenames = false;
+    };
   };
+  env.BROWSERSLIST_IGNORE_OLD_DATA = "true"; # make tailwindcss quiter
 
   enterShell = ''
     lamdera make src/Env.elm
