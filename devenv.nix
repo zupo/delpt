@@ -69,6 +69,17 @@ in
 
     # When https://github.com/pre-commit/identify/pull/484 is merged,
     # replace `files` line with this:
+    # types = ["elm"];
+    generate-elm = {
+      enable = true;
+      name = "Generate Elm Land files";
+      entry = "elm-land build";
+      files = ".elm$";
+      pass_filenames = false;
+    };
+
+    # When https://github.com/pre-commit/identify/pull/484 is merged,
+    # replace `files` line with this:
     # types = ["elm" "css" "javascript"];
     generate-css = {
       enable = true;

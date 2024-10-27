@@ -45,15 +45,6 @@ jobs:
       - name: Run tests and linters
         run: devenv test
 
-      # If we forgot to run build before committing, this & next step will catch it.
-      - name: Run codegen
-        shell: devenv shell bash -- -e {0}
-        run: |
-          elm-land build
-
-      - name: Check for uncommitted-changes
-        uses: teamniteo/gha-actions/uncommitted-changes@main
-
       - name: Install SSH key for deployment
         uses: shimataro/ssh-key-action@v2
         if: matrix.os == 'ubuntu-latest'
