@@ -23,7 +23,6 @@ You need [devenv](https://devenv.sh/). That's it. No fiddling with JS tooling
 nor containers.
 
 ```console
-$ devenv shell
 $ devenv up
 # open http://localhost:8000
 ```
